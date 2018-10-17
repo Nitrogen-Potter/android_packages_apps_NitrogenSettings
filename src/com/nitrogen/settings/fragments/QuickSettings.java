@@ -29,13 +29,16 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.nitrogen.settings.preferences.CustomSeekBarPreference;
+import com.nitrogen.settings.preferences.Utils;
 
 public class QuickSettings extends SettingsPreferenceFragment implements
         OnPreferenceChangeListener, Indexable {
 
     private static final String OMNI_QS_PANEL_BG_ALPHA = "qs_panel_bg_alpha";
+    private static final String QS_TILE_STYLE = "qs_tile_style";
 
     private CustomSeekBarPreference mQsPanelAlpha;
+    private ListPreference mQsTileStyle;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -51,19 +54,35 @@ public class QuickSettings extends SettingsPreferenceFragment implements
                 Settings.System.OMNI_QS_PANEL_BG_ALPHA, 255, UserHandle.USER_CURRENT);
         mQsPanelAlpha.setValue(qsPanelAlpha);
         mQsPanelAlpha.setOnPreferenceChangeListener(this);
+
+         mQsTileStyle = (ListPreference) findPreference(QS_TILE_STYLE);
+         int qsTileStyle = Settings.System.getIntForUser(resolver,
+               Settings.System.QS_TILE_STYLE, 0,
+	       UserHandle.USER_CURRENT);
+         int valueIndex = mQsTileStyle.findIndexOfValue(String.valueOf(qsTileStyle));
+         mQsTileStyle.setValueIndex(valueIndex >= 0 ? valueIndex : 0);
+         mQsTileStyle.setSummary(mQsTileStyle.getEntry());
+         mQsTileStyle.setOnPreferenceChangeListener(this);
         }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+        ContentResolver resolver = getActivity().getContentResolver();
+
         if (preference == mQsPanelAlpha) {
             int bgAlpha = (Integer) newValue;
             Settings.System.putIntForUser(getContentResolver(),
                     Settings.System.OMNI_QS_PANEL_BG_ALPHA, bgAlpha,
                     UserHandle.USER_CURRENT);
             return true;
-        }
+        } else if (preference == mQsTileStyle) {
+            int qsTileStyleValue = Integer.valueOf((String) newValue);
+            Settings.System.putIntForUser(resolver, Settings.System.QS_TILE_STYLE,
+                    qsTileStyleValue, UserHandle.USER_CURRENT);
+            mQsTileStyle.setSummary(mQsTileStyle.getEntries()[qsTileStyleValue]);
+       }
 
-        return false;
+        return true;
     }
 
     @Override

@@ -51,4 +51,10 @@
         android:summary="@string/quick_settings_vibrate_summary"
         android:defaultValue="false" />
 
+    <com.nitrogen.settings.preferences.SystemSettingListPreference
+         android:key="qs_tile_style"
+         android:title="@string/qs_tile_style_title"
+         android:persistent="false"
+         android:entries="@array/qs_selector_entries"
+         android:entryValues="@array/qs_selector_values" />
 </PreferenceScreen>
